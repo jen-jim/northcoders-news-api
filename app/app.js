@@ -24,6 +24,14 @@ app.use((error, request, response, next) => {
 });
 
 app.use((error, request, response, next) => {
+    if (error.code === "22P02") {
+        response.status(400).send({ error: "Bad request" });
+    } else {
+        next(error);
+    }
+});
+
+app.use((error, request, response, next) => {
     console.log(error);
     response.status(500).send({ error: "Internal server error" });
 });

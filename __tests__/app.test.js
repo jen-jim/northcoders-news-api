@@ -67,4 +67,12 @@ describe("GET /api/articles/:article_id", () => {
                 expect(error).toBe("Not found");
             });
     });
+    test("400: Responds with bad request when given article_id is not valid", () => {
+        return request(app)
+            .get("/api/articles/A")
+            .expect(400)
+            .then(({ body: { error } }) => {
+                expect(error).toBe("Bad request");
+            });
+    });
 });
