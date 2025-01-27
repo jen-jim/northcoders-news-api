@@ -10,4 +10,9 @@ app.get("/api", (request, response) => {
 
 app.get("/api/topics", getTopics);
 
+app.use((error, request, response, next) => {
+    console.log(error);
+    response.status(500).send({ error: "Internal server error" });
+});
+
 module.exports = app;
