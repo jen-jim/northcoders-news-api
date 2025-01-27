@@ -59,4 +59,12 @@ describe("GET /api/articles/:article_id", () => {
                 });
             });
     });
+    test("404: Responds with not found when given article_id is out of range", () => {
+        return request(app)
+            .get("/api/articles/9999")
+            .expect(404)
+            .then(({ body: { error } }) => {
+                expect(error).toBe("Not found");
+            });
+    });
 });

@@ -16,6 +16,14 @@ app.get("/api/topics", getTopics);
 app.get("/api/articles/:article_id", getArticleByArticleId);
 
 app.use((error, request, response, next) => {
+    if (error.status) {
+        response.status(error.status).send({ error: error.msg });
+    } else {
+        next(error);
+    }
+});
+
+app.use((error, request, response, next) => {
     console.log(error);
     response.status(500).send({ error: "Internal server error" });
 });
