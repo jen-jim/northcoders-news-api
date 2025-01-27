@@ -23,3 +23,19 @@ describe("GET /api", () => {
             });
     });
 });
+
+describe("GET /api/topics", () => {
+    test("200: Responds with an array of topic objects that have description and slug properties", () => {
+        return request(app)
+            .get("/api/topics")
+            .expect(200)
+            .then(({ body: { topics } }) => {
+                expect(topics.length).toBe(3);
+
+                topics.forEach((topic) => {
+                    expect(typeof topic.description).toBe("string");
+                    expect(typeof topic.slug).toBe("string");
+                });
+            });
+    });
+});
