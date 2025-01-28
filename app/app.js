@@ -14,7 +14,7 @@ app.get("/api/topics", getTopics);
 app.get("/api/articles/:article_id", getArticleByArticleId);
 
 app.use((error, request, response, next) => {
-    if (error.status) {
+    if (error.status && error.msg) {
         response.status(error.status).send({ error: error.msg });
     } else {
         next(error);
