@@ -18,7 +18,7 @@ exports.selectArticleByArticleId = (article_id) => {
 
 exports.selectAllArticles = () => {
     let sql = `SELECT
-                articles.article_id, title, topic, articles.author, articles.created_at, articles.votes,article_img_url,
+                articles.article_id, title, topic, articles.author, articles.created_at, articles.votes, article_img_url,
                 COUNT(comment_id)::INT AS comment_count
                 FROM articles
                 LEFT JOIN comments ON articles.article_id = comments.article_id
