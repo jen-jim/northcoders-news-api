@@ -1,3 +1,4 @@
+const e = require("express");
 const {
     selectArticleByArticleId,
     selectAllArticles
@@ -15,7 +16,11 @@ exports.getArticleByArticleId = (request, response, next) => {
 };
 
 exports.getAllArticles = (request, response, next) => {
-    selectAllArticles().then((articles) => {
-        response.status(200).send({ articles });
-    });
+    selectAllArticles()
+        .then((articles) => {
+            response.status(200).send({ articles });
+        })
+        .catch((error) => {
+            next(error);
+        });
 };
