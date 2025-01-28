@@ -121,3 +121,57 @@ describe("GET /api/articles", () => {
             });
     });
 });
+
+describe("GET /api/articles/:article_id/comments", () => {
+    test("200: Responds with an array of comments for the given article id with correct properties", () => {
+        return request(app)
+            .get("/api/articles/1/comments")
+            .expect(200)
+            .then(({ body: { comments } }) => {
+                expect(comments.length).toBe(11);
+
+                comments.forEach((comment) => {
+                    expect(typeof comment.comment_id).toBe("number");
+                    expect(typeof comment.body).toBe("string");
+                    expect(typeof comment.article_id).toBe("number");
+                    expect(typeof comment.author).toBe("string");
+                    expect(typeof comment.votes).toBe("number");
+                    expect(typeof comment.created_at).toBe("string");
+                });
+            });
+    });
+    test("200: Responds with an array of comments for the given article id sorted by created at in descending order", () => {
+        return request(app)
+            .get("/api/articles/1/comments")
+            .expect(200)
+            .then(({ body: { comments } }) => {
+                expect(comments).toBeSortedBy("created_at", {
+                    descending: true
+                });
+            });
+    });
+    test("200: Responds with an empty array when given article_id doesn't have any comments", () => {
+        return request(app)
+            .get("/api/articles/2/comments")
+            .expect(200)
+            .then(({ body: { comments } }) => {
+                expect(comments).toEqual([]);
+            });
+    });
+    test("404: Responds with not found when given article_id is out of range", () => {
+        return request(app)
+            .get("/api/articles/9999/comments")
+            .expect(404)
+            .then(({ body: { error } }) => {
+                expect(error).toBe("Not found");
+            });
+    });
+    test("400: Responds with bad request when given article_id is not valid", () => {
+        return request(app)
+            .get("/api/articles/A/comments")
+            .expect(400)
+            .then(({ body: { error } }) => {
+                expect(error).toBe("Bad request");
+            });
+    });
+});

@@ -3,7 +3,8 @@ const endpoints = require("../endpoints.json");
 const { getTopics } = require("./controllers/topics.controllers");
 const {
     getArticleByArticleId,
-    getAllArticles
+    getAllArticles,
+    getCommentsByArticleId
 } = require("./controllers/articles.controllers");
 
 const app = express();
@@ -16,6 +17,7 @@ app.get("/api/topics", getTopics);
 
 app.get("/api/articles/:article_id", getArticleByArticleId);
 app.get("/api/articles", getAllArticles);
+app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.use((error, request, response, next) => {
     if (error.status && error.msg) {
