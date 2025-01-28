@@ -76,3 +76,48 @@ describe("GET /api/articles/:article_id", () => {
             });
     });
 });
+
+describe("GET /api/articles", () => {
+    test("200: Responds with an array of article objects with correct properties", () => {
+        return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then(({ body: { articles } }) => {
+                expect(articles.length).toBe(13);
+
+                articles.forEach((article) => {
+                    expect(typeof article.article_id).toBe("number");
+                    expect(typeof article.title).toBe("string");
+                    expect(typeof article.topic).toBe("string");
+                    expect(typeof article.author).toBe("string");
+                    expect(typeof article.created_at).toBe("string");
+                    expect(typeof article.votes).toBe("number");
+                    expect(typeof article.article_img_url).toBe("string");
+                    expect(typeof article.comment_count).toBe("number");
+                    expect(article).not.toHaveProperty("body");
+                });
+            });
+    });
+    test("200: Responds with an array of article objects with the correct amount of comment count", () => {
+        return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then(({ body: { articles } }) => {
+                const article1 = articles.find(
+                    (article) => article.article_id === 1
+                );
+
+                expect(article1.comment_count).toBe(11);
+            });
+    });
+    test("200: Responds with an array of article objects sorted by created at in descending order", () => {
+        return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then(({ body: { articles } }) => {
+                expect(articles).toBeSortedBy("created_at", {
+                    descending: true
+                });
+            });
+    });
+});
