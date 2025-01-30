@@ -64,7 +64,7 @@ describe("GET /api/articles/:article_id", () => {
             .get("/api/articles/9999")
             .expect(404)
             .then(({ body: { error } }) => {
-                expect(error).toBe("Not found");
+                expect(error).toBe("Article not found");
             });
     });
     test("400: Responds with bad request when given article_id is not valid", () => {
@@ -163,7 +163,7 @@ describe("GET /api/articles/:article_id/comments", () => {
             .get("/api/articles/9999/comments")
             .expect(404)
             .then(({ body: { error } }) => {
-                expect(error).toBe("Not found");
+                expect(error).toBe("Article not found");
             });
     });
     test("400: Responds with bad request when given article_id is not valid", () => {
@@ -172,6 +172,86 @@ describe("GET /api/articles/:article_id/comments", () => {
             .expect(400)
             .then(({ body: { error } }) => {
                 expect(error).toBe("Bad request");
+            });
+    });
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+    test("201: Responds with the posted comment with correct properties", () => {
+        return request(app)
+            .post("/api/articles/1/comments")
+            .send({
+                body: "fruit pastilles seconded",
+                author: "rogersop"
+            })
+            .expect(201)
+            .then(({ body: { comment } }) => {
+                expect(typeof comment.comment_id).toBe("number");
+                expect(comment.body).toBe("fruit pastilles seconded");
+                expect(typeof comment.article_id).toBe("number");
+                expect(comment.author).toBe("rogersop");
+                expect(comment.votes).toBe(0);
+                expect(typeof comment.created_at).toBe("string");
+            });
+    });
+    test("404: Responds with not found when given article_id is out of range", () => {
+        return request(app)
+            .post("/api/articles/9999/comments")
+            .send({
+                body: "fruit pastilles seconded",
+                author: "rogersop"
+            })
+            .expect(404)
+            .then(({ body: { error } }) => {
+                expect(error).toBe("Article not found");
+            });
+    });
+    test("400: Responds with bad request when given article_id is not valid", () => {
+        return request(app)
+            .post("/api/articles/A/comments")
+            .send({
+                body: "fruit pastilles seconded",
+                author: "rogersop"
+            })
+            .expect(400)
+            .then(({ body: { error } }) => {
+                expect(error).toBe("Bad request");
+            });
+    });
+    test("400: Responds with bad request when new comment has missing keys/malformed input", () => {
+        return request(app)
+            .post("/api/articles/1/comments")
+            .send({
+                body: "fruit pastilles seconded",
+                user: "rogersop"
+            })
+            .expect(400)
+            .then(({ body: { error } }) => {
+                expect(error).toBe("Bad request");
+            });
+    });
+    test("400: Responds with bad request when new comment has incorrect data types", () => {
+        return request(app)
+            .post("/api/articles/1/comments")
+            .send({
+                body: 4,
+                user: "rogersop"
+            })
+            .expect(400)
+            .then(({ body: { error } }) => {
+                expect(error).toBe("Bad request");
+            });
+    });
+    test("404: Responds with not found when author is not a valid user", () => {
+        return request(app)
+            .post("/api/articles/1/comments")
+            .send({
+                body: "fruit pastilles seconded",
+                author: "jenjenjen"
+            })
+            .expect(404)
+            .then(({ body: { error } }) => {
+                expect(error).toBe("User not found");
             });
     });
 });

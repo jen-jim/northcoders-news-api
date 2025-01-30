@@ -9,7 +9,10 @@ exports.selectArticleByArticleId = (article_id) => {
         )
         .then(({ rows }) => {
             if (rows.length === 0) {
-                return Promise.reject({ status: 404, msg: "Not found" });
+                return Promise.reject({
+                    status: 404,
+                    msg: "Article not found"
+                });
             } else {
                 return rows[0];
             }
@@ -42,5 +45,20 @@ exports.selectCommentsByArticleId = (article_id) => {
         )
         .then(({ rows }) => {
             return rows;
+        });
+};
+
+exports.insertComment = (newComment, article_id) => {
+    const { body, author } = newComment;
+
+    return db
+        .query(
+            `INSERT INTO comments (body, author, article_id)
+            VALUES ($1, $2, $3)
+            RETURNING *`,
+            [body, author, article_id]
+        )
+        .then(({ rows }) => {
+            return rows[0];
         });
 };
