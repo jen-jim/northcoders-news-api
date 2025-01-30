@@ -17,28 +17,29 @@ exports.selectArticleByArticleId = (article_id) => {
 };
 
 exports.selectAllArticles = () => {
-    let sql = `SELECT
+    return db
+        .query(
+            `SELECT
                 articles.article_id, title, topic, articles.author, articles.created_at, articles.votes, article_img_url,
                 COUNT(comment_id)::INT AS comment_count
-                FROM articles
-                LEFT JOIN comments ON articles.article_id = comments.article_id
-                GROUP BY articles.article_id
-                ORDER BY articles.created_at DESC`;
-
-    return db.query(sql).then(({ rows }) => {
-        return rows;
-    });
+            FROM articles
+            LEFT JOIN comments ON articles.article_id = comments.article_id
+            GROUP BY articles.article_id
+            ORDER BY articles.created_at DESC`
+        )
+        .then(({ rows }) => {
+            return rows;
+        });
 };
 
 exports.selectCommentsByArticleId = (article_id) => {
-    return this.selectArticleByArticleId(article_id)
-        .then(() => {
-            let sql = `SELECT * FROM comments
-                    WHERE article_id = $1
-                    ORDER BY created_at DESC`;
-
-            return db.query(sql, [article_id]);
-        })
+    return db
+        .query(
+            `SELECT * FROM comments
+            WHERE article_id = $1
+            ORDER BY created_at DESC`,
+            [article_id]
+        )
         .then(({ rows }) => {
             return rows;
         });
