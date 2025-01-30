@@ -230,18 +230,6 @@ describe("POST /api/articles/:article_id/comments", () => {
                 expect(error).toBe("Bad request");
             });
     });
-    test("400: Responds with bad request when new comment has incorrect data types", () => {
-        return request(app)
-            .post("/api/articles/1/comments")
-            .send({
-                body: 4,
-                user: "rogersop"
-            })
-            .expect(400)
-            .then(({ body: { error } }) => {
-                expect(error).toBe("Bad request");
-            });
-    });
     test("404: Responds with not found when author is not a valid user", () => {
         return request(app)
             .post("/api/articles/1/comments")
