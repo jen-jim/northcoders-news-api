@@ -311,3 +311,30 @@ describe("PATCH /api/articles/:article_id", () => {
             });
     });
 });
+
+describe("DELETE /api/comments/:comment_id", () => {
+    test("204: Responds with no content", () => {
+        return request(app)
+            .delete("/api/comments/12")
+            .expect(204)
+            .then(({ body }) => {
+                expect(body).toEqual({});
+            });
+    });
+    test("404: Responds with not found when given comment_id is out of range", () => {
+        return request(app)
+            .delete("/api/comments/9999")
+            .expect(404)
+            .then(({ body: { error } }) => {
+                expect(error).toBe("Comment not found");
+            });
+    });
+    test("400: Responds with bad request when given comment_id is not valid", () => {
+        return request(app)
+            .delete("/api/comments/A")
+            .expect(400)
+            .then(({ body: { error } }) => {
+                expect(error).toBe("Bad request");
+            });
+    });
+});
