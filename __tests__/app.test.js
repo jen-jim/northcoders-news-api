@@ -171,6 +171,36 @@ describe("GET /api/articles", () => {
                 });
         });
     });
+    describe("Topic query", () => {
+        test("200: Responds with an array of article objects filtered by the given topic query", () => {
+            return request(app)
+                .get("/api/articles?topic=mitch")
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    expect(articles.length).toBe(12);
+
+                    articles.forEach((article) => {
+                        expect(article.topic).toBe("mitch");
+                    });
+                });
+        });
+        test("200: Responds with an empty array when given topic query doesn't have any articles", () => {
+            return request(app)
+                .get("/api/articles?topic=paper")
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    expect(articles).toEqual([]);
+                });
+        });
+        test("404: Responds with not found when given topic query is not valid", () => {
+            return request(app)
+                .get("/api/articles?topic=banana")
+                .expect(404)
+                .then(({ body: { error } }) => {
+                    expect(error).toBe("Topic not found");
+                });
+        });
+    });
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
