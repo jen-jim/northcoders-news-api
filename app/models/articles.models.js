@@ -2,27 +2,26 @@ const db = require("../../db/connection");
 const { checkTopicExists } = require("../utils");
 
 exports.selectArticleByArticleId = (article_id) => {
-    return db
-        .query(
-            `SELECT
+    let sql = `SELECT
                 articles.article_id, title, topic, articles.author, articles.body, articles.created_at, articles.votes, article_img_url,
                 COUNT(comment_id)::INT AS comment_count
             FROM articles
             LEFT JOIN comments ON articles.article_id = comments.article_id
             WHERE articles.article_id = $1
-            GROUP BY articles.article_id`,
-            [article_id]
-        )
-        .then(({ rows }) => {
-            if (rows.length === 0) {
-                return Promise.reject({
-                    status: 404,
-                    msg: "Article not found"
-                });
-            } else {
-                return rows[0];
-            }
-        });
+            GROUP BY articles.article_id`;
+
+    const values = [article_id];
+
+    return db.query(sql, values).then(({ rows }) => {
+        if (rows.length === 0) {
+            return Promise.reject({
+                status: 404,
+                msg: "Article not found"
+            });
+        } else {
+            return rows[0];
+        }
+    });
 };
 
 exports.selectArticles = (sort_by = "created_at", order = "DESC", topic) => {
