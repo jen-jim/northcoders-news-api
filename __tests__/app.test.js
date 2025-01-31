@@ -243,3 +243,71 @@ describe("POST /api/articles/:article_id/comments", () => {
             });
     });
 });
+
+describe("PATCH /api/articles/:article_id", () => {
+    test("200: Responds with the updated article when increasing votes", () => {
+        return request(app)
+            .patch("/api/articles/1")
+            .send({ inc_votes: 1 })
+            .expect(200)
+            .then(({ body: { article } }) => {
+                expect(article).toEqual({
+                    article_id: 1,
+                    title: "Living in the shadow of a great man",
+                    topic: "mitch",
+                    author: "butter_bridge",
+                    body: "I find this existence challenging",
+                    created_at: "2020-07-09T20:11:00.000Z",
+                    votes: 101,
+                    article_img_url:
+                        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+                });
+            });
+    });
+    test("200: Responds with the updated article when decreasing votes", () => {
+        return request(app)
+            .patch("/api/articles/1")
+            .send({ inc_votes: -100 })
+            .expect(200)
+            .then(({ body: { article } }) => {
+                expect(article).toEqual({
+                    article_id: 1,
+                    title: "Living in the shadow of a great man",
+                    topic: "mitch",
+                    author: "butter_bridge",
+                    body: "I find this existence challenging",
+                    created_at: "2020-07-09T20:11:00.000Z",
+                    votes: 0,
+                    article_img_url:
+                        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+                });
+            });
+    });
+    test("404: Responds with not found when given article_id is out of range", () => {
+        return request(app)
+            .patch("/api/articles/9999")
+            .send({ inc_votes: 1 })
+            .expect(404)
+            .then(({ body: { error } }) => {
+                expect(error).toBe("Article not found");
+            });
+    });
+    test("400: Responds with bad request when given article_id is not valid", () => {
+        return request(app)
+            .patch("/api/articles/A")
+            .send({ inc_votes: 1 })
+            .expect(400)
+            .then(({ body: { error } }) => {
+                expect(error).toBe("Bad request");
+            });
+    });
+    test("400: Responds with bad request when input has incorrect data type", () => {
+        return request(app)
+            .patch("/api/articles/1")
+            .send({ inc_votes: "one" })
+            .expect(400)
+            .then(({ body: { error } }) => {
+                expect(error).toBe("Bad request");
+            });
+    });
+});
