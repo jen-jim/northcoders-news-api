@@ -1,6 +1,6 @@
 const {
     selectArticleByArticleId,
-    selectAllArticles,
+    selectArticles,
     selectCommentsByArticleId,
     insertComment,
     updateArticle
@@ -17,8 +17,8 @@ exports.getArticleByArticleId = (request, response, next) => {
         });
 };
 
-exports.getAllArticles = (request, response, next) => {
-    selectAllArticles()
+exports.getArticles = (request, response, next) => {
+    selectArticles()
         .then((articles) => {
             response.status(200).send({ articles });
         })
@@ -29,7 +29,7 @@ exports.getAllArticles = (request, response, next) => {
 
 exports.getCommentsByArticleId = (request, response, next) => {
     const { article_id } = request.params;
-    return selectArticleByArticleId(article_id)
+    selectArticleByArticleId(article_id)
         .then(() => {
             return selectCommentsByArticleId(article_id);
         })
@@ -43,7 +43,7 @@ exports.getCommentsByArticleId = (request, response, next) => {
 
 exports.postComment = (request, response, next) => {
     const { article_id } = request.params;
-    return selectArticleByArticleId(article_id)
+    selectArticleByArticleId(article_id)
         .then(() => {
             const newComment = request.body;
             return insertComment(newComment, article_id);
@@ -58,7 +58,7 @@ exports.postComment = (request, response, next) => {
 
 exports.patchArticle = (request, response, next) => {
     const { article_id } = request.params;
-    return selectArticleByArticleId(article_id)
+    selectArticleByArticleId(article_id)
         .then(() => {
             const newVote = request.body.inc_votes;
             return updateArticle(newVote, article_id);
