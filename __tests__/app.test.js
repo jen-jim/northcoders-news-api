@@ -184,6 +184,21 @@ describe("GET /api/articles", () => {
                     });
                 });
         });
+        test("200: Responds with an array of article objects filtered and sorted by multiple queries", () => {
+            return request(app)
+                .get("/api/articles?topic=mitch&sort_by=votes&order=asc")
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    expect(articles.length).toBe(12);
+                    expect(articles).toBeSortedBy("votes", {
+                        descending: false
+                    });
+
+                    articles.forEach((article) => {
+                        expect(article.topic).toBe("mitch");
+                    });
+                });
+        });
         test("200: Responds with an empty array when given topic query doesn't have any articles", () => {
             return request(app)
                 .get("/api/articles?topic=paper")
