@@ -41,7 +41,7 @@ describe("GET /api/topics", () => {
 });
 
 describe("GET /api/articles/:article_id", () => {
-    test("200: Responds with the correct article with its properties", () => {
+    test("200: Responds with the correct article with its properties and the correct comment count", () => {
         return request(app)
             .get("/api/articles/1")
             .expect(200)
@@ -55,7 +55,8 @@ describe("GET /api/articles/:article_id", () => {
                     created_at: "2020-07-09T20:11:00.000Z",
                     votes: 100,
                     article_img_url:
-                        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+                        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+                    comment_count: 11
                 });
             });
     });
@@ -73,6 +74,22 @@ describe("GET /api/articles/:article_id", () => {
             .expect(400)
             .then(({ body: { error } }) => {
                 expect(error).toBe("Bad request");
+            });
+    });
+    test("200: Responds with the correct article with the correct amount of comment count", () => {
+        return request(app)
+            .get("/api/articles/1")
+            .expect(200)
+            .then(({ body: { article } }) => {
+                expect(article.comment_count).toBe(11);
+            });
+    });
+    test("200: Responds with the correct article with zero comment count when no comments for the article", () => {
+        return request(app)
+            .get("/api/articles/2")
+            .expect(200)
+            .then(({ body: { article } }) => {
+                expect(article.comment_count).toBe(0);
             });
     });
 });
