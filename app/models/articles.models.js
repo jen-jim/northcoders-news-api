@@ -19,7 +19,7 @@ exports.selectArticleByArticleId = (article_id) => {
         });
 };
 
-exports.selectAllArticles = () => {
+exports.selectArticles = () => {
     return db
         .query(
             `SELECT
@@ -50,7 +50,6 @@ exports.selectCommentsByArticleId = (article_id) => {
 
 exports.insertComment = (newComment, article_id) => {
     const { body, author } = newComment;
-
     return db
         .query(
             `INSERT INTO comments (body, author, article_id)
