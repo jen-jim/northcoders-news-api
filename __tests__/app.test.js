@@ -120,6 +120,57 @@ describe("GET /api/articles", () => {
                 });
             });
     });
+    describe("Sorting queries", () => {
+        test("200: Responds with an array of article objects sorted by the given sort by query", () => {
+            return request(app)
+                .get("/api/articles?sort_by=votes")
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    expect(articles.length).toBe(13);
+                    expect(articles).toBeSortedBy("votes", {
+                        descending: true
+                    });
+                });
+        });
+        test("200: Responds with an array of article objects sorted by the given order query", () => {
+            return request(app)
+                .get("/api/articles?order=asc")
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    expect(articles.length).toBe(13);
+                    expect(articles).toBeSortedBy("created_at", {
+                        descending: false
+                    });
+                });
+        });
+        test("200: Responds with an array of article objects sorted by multiple queries", () => {
+            return request(app)
+                .get("/api/articles?sort_by=votes&order=asc")
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    expect(articles.length).toBe(13);
+                    expect(articles).toBeSortedBy("votes", {
+                        descending: false
+                    });
+                });
+        });
+        test("400: Responds with bad request when given invalid sort by query", () => {
+            return request(app)
+                .get("/api/articles?sort_by=date")
+                .expect(400)
+                .then(({ body: { error } }) => {
+                    expect(error).toBe("Bad request");
+                });
+        });
+        test("400: Responds with bad request when given invalid order query", () => {
+            return request(app)
+                .get("/api/articles?order=up")
+                .expect(400)
+                .then(({ body: { error } }) => {
+                    expect(error).toBe("Bad request");
+                });
+        });
+    });
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
