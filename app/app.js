@@ -5,7 +5,8 @@ const {
     getArticleByArticleId,
     getAllArticles,
     getCommentsByArticleId,
-    postComment
+    postComment,
+    patchArticle
 } = require("./controllers/articles.controllers");
 
 const app = express();
@@ -21,6 +22,7 @@ app.get("/api/articles/:article_id", getArticleByArticleId);
 app.get("/api/articles", getAllArticles);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", postComment);
+app.patch("/api/articles/:article_id", patchArticle);
 
 app.use((error, request, response, next) => {
     if (error.status && error.msg) {
