@@ -19,20 +19,44 @@ exports.selectArticleByArticleId = (article_id) => {
         });
 };
 
-exports.selectArticles = () => {
-    return db
-        .query(
-            `SELECT
+exports.selectArticles = (sort_by = "created_at", order = "DESC") => {
+    const greenlist = [
+        "article_id",
+        "title",
+        "topic",
+        "author",
+        "body",
+        "created_at",
+        "votes",
+        "article_img_url",
+        "comment_count"
+    ];
+
+    let sql = `SELECT
                 articles.article_id, title, topic, articles.author, articles.created_at, articles.votes, article_img_url,
                 COUNT(comment_id)::INT AS comment_count
             FROM articles
             LEFT JOIN comments ON articles.article_id = comments.article_id
-            GROUP BY articles.article_id
-            ORDER BY articles.created_at DESC`
-        )
-        .then(({ rows }) => {
-            return rows;
-        });
+            GROUP BY articles.article_id`;
+
+    const values = [];
+
+    if (greenlist.includes(sort_by)) {
+        sql += ` ORDER BY ${sort_by}`;
+    } else {
+        return Promise.reject({ status: 400, msg: "Bad request" });
+    }
+
+    order = order.toUpperCase();
+    if (order === "ASC" || order === "DESC") {
+        sql += ` ${order}`;
+    } else {
+        return Promise.reject({ status: 400, msg: "Bad request" });
+    }
+
+    return db.query(sql, values).then(({ rows }) => {
+        return rows;
+    });
 };
 
 exports.selectCommentsByArticleId = (article_id) => {
